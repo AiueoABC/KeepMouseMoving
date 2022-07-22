@@ -36,20 +36,12 @@ if __name__ == '__main__':
     import queue
 
     mm = MouseMoveRandom()
-    q = queue.Queue()
     qq = queue.Queue()
-
-    def input_thread():
-        while True:
-            key = input("Command? continue-[c], pause-p, start-s, quit-q")
-            q.put(key)
-            if key == "q":
-                break
 
     def action():
         while True:
             try:
-                key = q.get(timeout=0.1)
+                key = input("Command? continue-[c], pause-p, start-s, quit-q")
             except:
                 key = None
             if key == "p":
@@ -63,22 +55,18 @@ if __name__ == '__main__':
                 break
 
     def move():
-        while True:
+        toquit = None
+        while toquit is None:
             mm.move()
             try:
                 toquit = qq.get(timeout=0.05)
             except:
-                toquit = None
-            if toquit is not None:
-                break
+                pass
 
-    p0 = threading.Thread(target=input_thread)
     p1 = threading.Thread(target=action)
     p2 = threading.Thread(target=move)
-    p0.start()
     p1.start()
     p2.start()
     qq.get()  # block here
-    p0.join()
     p1.join()
     p2.join()
